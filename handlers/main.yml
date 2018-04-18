@@ -1,2 +1,36 @@
 ---
-# handlers file for ansible-postfix
+- name: Postalias
+  command: postalias /etc/aliases
+  notify: Reload Postfix
+  become: true
+
+- name: Postvirtualalias
+  command: postmap /etc/postfix/virtual_alias
+  notify: Reload Postfix
+  become: true
+
+- name: Postmap
+  command: postmap /etc/postfix/tranport
+  notify: Reload Postfix
+  become: true
+
+- name: Postmap whitelist
+  command: postmap /etc/postfix/whitelist
+  notify: Reload Postfix
+  become: true
+
+- name: Reload postsrsd
+  service:
+    name: postsrsd
+    state: restart
+  become: true
+
+- name: Reload Postfix
+  service:
+    name: postfix
+    state: reloaded
+  become: true
+
+- name: Reconfigure Postfix
+  command: dpkg-reconfigure --frontend noninteractive postfix
+  become: true

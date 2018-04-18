@@ -1,2 +1,15 @@
 ---
-# tasks file for ansible-postfix
+- include: debconf.yml
+  become: true
+
+- include: mailname.yml
+  become: true
+
+- include: packages.yml
+  become: true
+
+- include: ufw.yml
+  become: true
+
+- include: postfix.yml
+  become: true

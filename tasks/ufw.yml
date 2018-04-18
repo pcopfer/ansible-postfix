@@ -1,0 +1,29 @@
+---
+- name: Ufw enable smtp
+  ufw:
+    name: Postfix
+    rule: allow
+    delete: "{% if smtp_public is defined and smtp_public == true %}no{% else %}yes{% endif %}"
+  tags:
+    - mail
+    - ufw
+
+- name: Ufw enable submission
+  ufw:
+    name: Postfix Submission
+    rule: allow
+    delete: "{% if submission_public is defined and submission_public == true %}no{% else %}yes{% endif %}"
+  tags:
+    - mail
+    - ufw
+
+- name: Ufw
+  ufw:
+    name: Postfix
+    rule: limit
+    interface: ens3
+    direction: in
+    delete: yes
+  tags:
+    - mail
+    - ufw

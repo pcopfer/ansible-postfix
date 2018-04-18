@@ -1,0 +1,9 @@
+---
+- name: Set hostname in /etc/mailname
+  copy:
+    content: "{{ hostname }}.{{ base_url }}"
+    dest: /etc/mailname
+  tags:
+    - mail
+    - mailname
+

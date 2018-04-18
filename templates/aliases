@@ -1,0 +1,8 @@
+# template from ansible role/mail/
+
+# Alias form virtual_alias in configfile
+{% for aliases_item in aliases %}
+{% for from_item in aliases_item.from %}
+{{ from_item }}:{{ aliases_item.to }}
+{% endfor %}
+{% endfor %}

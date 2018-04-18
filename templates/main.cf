@@ -1,0 +1,163 @@
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+smtpd_banner = $myhostname ESMTP $mail_name (Ubuntu)
+biff = no
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+
+{% if postfix_delay_warning_time is defined %}
+# Uncomment the next line to generate "delayed mail" warnings
+delay_warning_time = {{ postfix_delay_warning_time }}
+{% endif %}
+
+readme_directory = no
+
+# See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for
+# information on enabling SSL in the smtp client.
+
+myhostname = {{ postfix_myhostname }}
+alias_maps = hash:/etc/aliases{% if 'mailman' in role_names %}, hash:/var/lib/mailman/data/aliases{% endif %} 
+alias_database = hash:/etc/aliases
+myorigin = {{hostname}}.{{base_url}}
+mydestination = localhost.{{ base_url }}, , localhost, {{hostname}}.{{base_url}}
+{% if postfix_relayhost is defined and postfix_relayhost != false %}
+relayhost = {{ postfix_relayhost }}
+{% endif %}
+mynetworks = {% for network in postfix_mynetworks %}{{ network }} {% endfor %} 
+mailbox_size_limit = 0
+recipient_delimiter = +
+inet_interfaces = all
+inet_protocols = all
+
+compatibility_level = 2
+
+# Domains für welche mails entgegen genommen werden
+{% if 'mailman' in role_names %}
+virtual_alias_domains = lists.{{ base_url }}, shack.space, lists.shack.space
+{% endif %}
+{% if postfix_virtual_alias is defined or mailuser is defined %}
+virtual_alias_maps = hash:/etc/postfix/virtual_alias{% if 'mailman' in role_names %}, hash:/var/lib/mailman/data/virtual-mailman{% endif %} 
+{% endif %}
+
+# Setup basic SMTP attrs
+smtpd_soft_error_limit = 2
+smtpd_error_sleep_time = ${stress?0}${stress:10s}
+smtpd_hard_error_limit = ${stress?3}${stress:20}
+smtpd_timeout = ${stress?30}${stress:300}
+smtpd_delay_reject = yes
+smtpd_helo_required = yes
+strict_rfc821_envelopes = yes
+disable_vrfy_command = yes
+smtpd_recipient_limit = 250
+
+{% if postfix_ssl is defined and postfix_ssl == true %}
+# TLS parameters
+smtpd_tls_cert_file=/etc/ssl/letsencrypt/certs/{{hostname}}.{{base_url}}/cert.pem
+smtpd_tls_key_file=/etc/ssl/letsencrypt/certs/{{hostname}}.{{base_url}}/privkey.pem
+smtp_tls_CAfile = /etc/ssl/letsencrypt/certs/{{hostname}}.{{base_url}}/chain.pem
+smtp_tls_CApath = /etc/ssl/letsencrypt/certs/{{hostname}}.{{base_url}}/fullchain.pem
+# Wenn no, dann keine entgegennahme von Mails
+smtpd_use_tls=yes
+smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+
+smtpd_tls_received_header = yes
+smtp_tls_security_level = may
+smtp_tls_loglevel = 1
+
+smtpd_tls_security_level = may
+
+smtpd_tls_auth_only = yes
+tls_ssl_options = NO_COMPRESSION
+
+# SSL Restriction
+
+smtp_tls_mandatory_protocols = !SSLv2, !SSLv3
+smtp_tls_protocols = !SSLv2, !SSLv3
+lmtp_tls_mandatory_protocols = !SSLv2, !SSLv3
+lmtp_tls_protocols = !SSLv2, !SSLv3
+smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3
+smtpd_tls_protocols = !SSLv2, !SSLv3
+smtpd_tls_mandatory_ciphers=high
+tls_high_cipherlist=EDH+CAMELLIA:EDH+aRSA:EECDH+aRSA+AESGCM:EECDH+aRSA+SHA256:EECDH:+CAMELLIA128:+AES128:+SSLv3:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!DSS:!RC4:!SEED:!IDEA:!ECDSA:kEDH:CAMELLIA128-SHA:AES128-SHA
+{% endif %}
+
+smtpd_relay_restrictions =
+    permit_mynetworks,
+    permit_sasl_authenticated,
+    defer_unauth_destination
+
+smtpd_helo_restrictions =
+{% if postfix_whitelist is defined %}
+    check_client_access hash:/etc/postfix/whitelist {% endif %}
+    permit_sasl_authenticated,
+    permit_mynetworks,
+    reject_unauth_destination,
+    reject_non_fqdn_sender,
+    reject_non_fqdn_recipient,
+    reject_unknown_recipient_domain,
+    reject_non_fqdn_hostname,
+    reject_invalid_hostname,
+    reject_unknown_helo_hostname,
+    reject_unauth_pipelining
+
+smtpd_client_restrictions =
+{% if postfix_whitelist is defined %}
+    check_client_access hash:/etc/postfix/whitelist {% endif %}
+    permit_mynetworks,
+    reject_unknown_client,
+    reject_unknown_sender_domain,
+    reject_unknown_client_hostname,
+    reject_invalid_helo_hostname
+
+smtpd_recipient_restrictions =
+    permit_sasl_authenticated,
+    permit_mynetworks,
+    reject_unauth_destination,
+    reject_non_fqdn_hostname,
+    reject_non_fqdn_sender,
+    reject_non_fqdn_recipient,
+    reject_unknown_recipient_domain,
+    reject_invalid_hostname,
+    reject_unlisted_recipient,
+    reject_unauth_pipelining,
+    reject_unauth_destination,
+    permit
+
+smtpd_sender_restrictions =
+    permit_sasl_authenticated,
+    permit_mynetworks,
+    reject_unauth_destination,
+    reject_unauth_pipelining,
+    reject_non_fqdn_sender,
+    reject_non_fqdn_recipient,
+    reject_unknown_sender_domain,
+    permit
+
+smtpd_data_restrictions =
+    reject_unauth_pipelining,
+    permit
+
+{% if postfix_srs is defined and postfix_srs == true %}
+# SRS Part
+sender_canonical_maps = tcp:localhost:10001
+sender_canonical_classes = envelope_sender
+recipient_canonical_maps = tcp:localhost:10002
+recipient_canonical_classes= envelope_recipient,header_recipient
+{% endif %}
+
+{% if 'dovecot' in role_names and dovecot_lmtp is defined and dovecot_lmtp == true %}
+#add from http://wiki2.dovecot.org/HowTo/PostfixDovecotLMTP
+virtual_transport = lmtp:unix:private/dovecot-lmtp
+
+virtual_mailbox_domains = {{ base_url }}
+{% endif %}
+
+{% if 'rspamd' in role_names %}
+# Rmilter setup
+smtpd_milters = inet:localhost:11332
+milter_protocol = 6
+milter_mail_macros = i {mail_addr} {client_addr} {client_name} {auth_authen}
+milter_default_action = accept
+{% endif %}

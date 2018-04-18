@@ -1,0 +1,61 @@
+---
+- name: Copy main.cf config file in Place
+  template:
+    src: main.cf
+    dest: /etc/postfix/main.cf
+  notify: Reload Postfix
+  tags:
+    - mail
+    - postfix
+    - dovecot
+    - rspamd
+
+- name: Copy master.cf config file in Place
+  copy:
+    src: master.cf
+    dest: /etc/postfix/master.cf
+  notify: Reload Postfix
+  tags:
+    - mail
+    - postfix
+
+- name: Copy aliases list template in Place
+  template:
+    src: aliases
+    dest: /etc/aliases
+  notify: Postalias
+  tags:
+    - mail
+    - postfix
+
+- name: Copy virtual_alias list template in Place
+  template:
+    src: virtual_alias
+    dest: /etc/postfix/virtual_alias
+  notify: Postvirtualalias
+  when: postfix_virtual_alias is defined or mailuser is defined
+  tags:
+    - mail
+    - postfix
+
+- name: Copy SRS config in Place
+  template:
+    src: postsrsd
+    dest: /etc/default/postsrsd
+  when: postfix_srs is defined and postfix_srs == true
+  notify: Reload postsrsd
+  tags:
+    - mail
+    - postfix
+    - postsrsd
+
+- name: create Whitelist file
+  template:
+      src: whitelist
+      dest: /etc/postfix/whitelist
+  when: postfix_whitelist is defined
+  notify: Postmap whitelist
+  tags:
+    - mail
+    - postfix
+    - whitelist

@@ -1,0 +1,15 @@
+# template from ansible role/mail/
+
+# Alias for every Mailuser on the System
+{% for mailuser_item in mailuser %}
+{% for users_item in mailuser_item.users %}
+{{ users_item.username }}@{{ mailuser_item.domain }}	{{ users_item.username }}@{{ mailuser_item.domain }}
+{% endfor %}
+{% endfor %}
+
+# Alias form virtual_alias in configfile
+{% for virtual_alias_item in postfix_virtual_alias %}
+{% for from_item in virtual_alias_item.from %}
+{{ from_item }}		{{ virtual_alias_item.to }}
+{% endfor %}
+{% endfor %}
