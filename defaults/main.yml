@@ -1,5 +1,6 @@
 ---
-postfix_myhostname: "{{ hostname }}.{{ base_url }}"
+postfix_hostname: "{{ ansible_fqdn }}"
+postfix_myhostname: "{{ postfix_hostname }}"
 
 # copy from: https://github.com/Oefenweb/ansible-postfix/blob/master/vars/main.yml
 postfix_debconf_selections:
