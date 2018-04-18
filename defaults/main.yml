@@ -1,6 +1,7 @@
 ---
 postfix_hostname: "{{ ansible_fqdn }}"
 postfix_myhostname: "{{ postfix_hostname }}"
+postfix_srs: false
 
 # copy from: https://github.com/Oefenweb/ansible-postfix/blob/master/vars/main.yml
 postfix_debconf_selections:

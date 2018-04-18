@@ -7,8 +7,6 @@
     - postfix
     - postfix-pcre
     - mailutils
-    - python-passlib
-    - python3-passlib
   tags:
     - apt
     - mail
@@ -18,7 +16,7 @@
 - name: Install or remove postfix_srs
   apt:
     pkg: "{{ item }}"
-    state: "{% if postfix_srs is defined and postfix_srs == true %}present{% else %}absent{% endif %}"
+    state: "{% if postfix_srs %}present{% else %}absent{% endif %}"
   with_items:
     - postsrsd
   tags:
