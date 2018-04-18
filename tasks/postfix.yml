@@ -23,6 +23,7 @@
   template:
     src: aliases
     dest: /etc/aliases
+  when: postfix_aliases is defined
   notify: Postalias
   tags:
     - mail
@@ -42,7 +43,7 @@
   template:
     src: postsrsd
     dest: /etc/default/postsrsd
-  when: postfix_srs is defined and postfix_srs == true
+  when: postfix_srs == true
   notify: Reload postsrsd
   tags:
     - mail
@@ -59,3 +60,13 @@
     - mail
     - postfix
     - whitelist
+
+- name: Ensure that postfix is enabled and started
+  service:
+    name: postfix
+    enabled: yes
+    state: started
+  tags:
+    - mail
+    - postfix
+    - service
