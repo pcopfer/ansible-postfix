@@ -2,8 +2,12 @@
 postfix_hostname: "{{ ansible_fqdn }}"
 postfix_myhostname: "{{ postfix_hostname }}"
 postfix_srs: false
-ufw_smtp_public: false
-ufw_submission_public: false
+postfix_smtp: true
+ufw_smtp_public: "{{ postfix_smtp }}"
+postfix_submission: false
+ufw_submission_public: "{{ postfix_submission }}"
+postfix_smtps: true
+ufw_smtps: "{{ postfix_smtps }}"
 
 # copy from: https://github.com/Oefenweb/ansible-postfix/blob/master/vars/main.yml
 postfix_debconf_selections:

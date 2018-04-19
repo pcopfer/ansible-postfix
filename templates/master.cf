@@ -13,9 +13,12 @@
 #smtpd     pass  -       -       -       -       -       smtpd
 #dnsblog   unix  -       -       -       -       0       dnsblog
 #tlsproxy  unix  -       -       -       -       0       tlsproxy
+{% if postfix_smtp %}
 smtp       inet  n       -       y       -       -       smtpd
+{% endif %}
 #    -o content_filter=spamfilter
 #  -o tls_preempt_cipherlist=yes
+{% if postfix_submission %}
 submission inet  n       -       y       -       -       smtpd
     -o syslog_name=postfix/submission
     -o smtpd_tls_security_level=encrypt
@@ -24,7 +27,9 @@ submission inet  n       -       y       -       -       smtpd
     -o smtpd_sasl_path=private/auth
     -o smtpd_client_restrictions=permit_sasl_authenticated,reject
 #    -o cleanup_service_name=auth-cleanup
+{% endif %}
 #628       inet  n       -       -       -       -       qmqpd
+{% if postfix_smtps %}
 smtps      inet  n       -       y       -       -       smtpd
     -o syslog_name=postfix/smtps
     -o smtpd_tls_wrappermode=yes
@@ -33,6 +38,7 @@ smtps      inet  n       -       y       -       -       smtpd
 #    -o smtpd_sasl_path=private/auth
     -o smtpd_client_restrictions=reject
 #    -o cleanup_service_name=auth-cleanup
+{% endif %}
 pickup     unix  n       -       y       60      1       pickup
 cleanup    unix  n       -       y       -       0       cleanup
 qmgr      unix  n       -       n       300     1       qmgr
