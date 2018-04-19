@@ -23,7 +23,7 @@
   template:
     src: aliases
     dest: /etc/aliases
-  when: postfix_aliases is defined
+  when: mail_aliases is defined
   notify: Postalias
   tags:
     - mail
