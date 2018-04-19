@@ -4,14 +4,14 @@
 # Addresses are rewritten to originate from this domain. The default value
 # is taken from `postconf -h mydomain` and probably okay.
 #
-SRS_DOMAIN={{ base_url }}
+SRS_DOMAIN={{ postsrsd_domains }}
 
 # Exclude additional domains.
 # You may list domains which shall not be subjected to address rewriting.
 # If a domain name starts with a dot, it matches all subdomains, but not
 # the domain itself. Separate multiple domains by space or comma.
 #
-SRS_EXCLUDE_DOMAINS=.{{ base_url }}, lists.{{ base_url }}
+SRS_EXCLUDE_DOMAINS={{ postsrsd_exclude_domains }}
 
 # Secret key to sign rewritten addresses.
 # When postsrsd is installed for the first time, a random secret is generated

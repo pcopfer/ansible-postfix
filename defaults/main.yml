@@ -27,4 +27,7 @@ postfix_debconf_selections:
     value: No configuration
     vtype: select
 
+postsrsd_domains: "{{ postfix_domain }}"
+postsrsd_exclude_domains: ".{{ postfix_domain }}"
+
 dovecot_lmtp: false
