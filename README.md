@@ -1,7 +1,7 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+A role to manage Postfix.
 
 Requirements
 ------------
@@ -11,7 +11,30 @@ Any pre-requisites that may not be covered by Ansible itself or the role should 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+- ``postfix_hostname: "{{ ansible_hostname }}"``
+- ``postfix_domain: "{{ ansible_domain }}"`` 
+- ``postfix_fqdn: "{{ ansible_fqdn }}"``
+- ``postfix_myhostname: "{{ postfix_fqdn }}"``
+- ``postfix_smtp: true`` Enable SMTP, recive Mail on TCP 25
+- ``ufw_smtp_public: "{{ postfix_smtp }}"`` Open TCP 25 in Firewall
+- ``postfix_submission: false`` Disable submission, recive Mails from Clients, TCP 587
+- ``ufw_submission_public: "{{ postfix_submission }}"`` Open TCP 587 in Firewall
+- ``postfix_smtps: false`` Disable smtps, recive Mail on TCP 465 (deprecated) 
+- ``ufw_smtps: "{{ postfix_smtps }}"`` Open TCP 465 in Firewall
+- ``postfix_smtpd_banner: "$myhostname ESMTP $mail_name"`` Set Banner on Connect on smtp
+- ``postfix_delay_warning_time: "4h"``
+- ``postfix_alias_maps: "hash:/etc/aliases"`` Alias Map for postfix_domain
+- ``postfix_relayhost : ""`` Add Postfix relayhost, different Server which sends the Mails to the internet
+- ``postfix_ssl: true`` Postfix use TLS
+- ``postfix_cert_path: "/etc/ssl/letsencrypt/certs/{{ postfix_fqdn }}"`` Path to the certs
+- ``postfix_rmilter: false`` Add Rmilter config for rspamd
+- ``postfix_virtual_mailbox_domains: "{{ ansible_domain }}"`` Virtual Domains
+- ``postfix_mynetworks: "127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128"`` my_networks for send Mail without authentication
+- ``postfix_debconf_selections: ...`` For Debian etc. only
+- ``postfix_srs: false`` Disable Postfix Sender rewrite scheme (postsrsd)
+- ``postsrsd_domains: "{{ postfix_domain }}"`` 
+- ``postsrsd_exclude_domains: ".{{ postfix_domain }}"``
+- ``dovecot_lmtp: false`` Disable dovecot_lmtp Dovecot Local Mail transport
 
 Dependencies
 ------------
@@ -35,4 +58,4 @@ BSD
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+pcopfer <christian-platz at pcopfer.de>
