@@ -1,6 +1,8 @@
 ---
-postfix_hostname: "{{ ansible_fqdn }}"
-postfix_myhostname: "{{ postfix_hostname }}"
+postfix_hostname: "{{ ansible_hostname }}"
+postfix_domain: "{{ ansible_domain }}"
+postfix_fqdn: "{{ ansible_fqdn }}"
+postfix_myhostname: "{{ postfix_fqdn }}"
 postfix_srs: false
 postfix_smtp: true
 ufw_smtp_public: "{{ postfix_smtp }}"

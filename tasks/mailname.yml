@@ -1,7 +1,7 @@
 ---
 - name: Set hostname in /etc/mailname
   copy:
-    content: "{{ postfix_hostname }}"
+    content: "{{ postfix_fqdn }}"
     dest: /etc/mailname
   tags:
     - mail
