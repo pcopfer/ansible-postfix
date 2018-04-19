@@ -8,7 +8,7 @@ postfix_smtp: true
 ufw_smtp_public: "{{ postfix_smtp }}"
 postfix_submission: false
 ufw_submission_public: "{{ postfix_submission }}"
-postfix_smtps: true
+postfix_smtps: false
 ufw_smtps: "{{ postfix_smtps }}"
 postfix_smtpd_banner: "$myhostname ESMTP $mail_name"
 postfix_delay_warning_time: "4h"
