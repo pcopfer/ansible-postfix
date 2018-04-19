@@ -1,15 +1,13 @@
 # See /usr/share/postfix/main.cf.dist for a commented, more complete version
 
-smtpd_banner = $myhostname ESMTP $mail_name (Ubuntu)
+smtpd_banner = {{ postfix_smtpd_banner }}
 biff = no
 
 # appending .domain is the MUA's job.
 append_dot_mydomain = no
 
-{% if postfix_delay_warning_time is defined %}
 # Uncomment the next line to generate "delayed mail" warnings
 delay_warning_time = {{ postfix_delay_warning_time }}
-{% endif %}
 
 readme_directory = no
 
@@ -17,14 +15,12 @@ readme_directory = no
 # information on enabling SSL in the smtp client.
 
 myhostname = {{ postfix_myhostname }}
-alias_maps = hash:/etc/aliases{% if 'mailman' in role_names %}, hash:/var/lib/mailman/data/aliases{% endif %} 
+alias_maps = "{{ postfix_alias_maps }} 
 alias_database = hash:/etc/aliases
-myorigin = {{hostname}}.{{base_url}}
-mydestination = localhost.{{ base_url }}, , localhost, {{hostname}}.{{base_url}}
-{% if postfix_relayhost is defined and postfix_relayhost != false %}
+myorigin = {{ postfix_fqdn }}
+mydestination = localhost.{{ postfix_domain }}, , localhost, {{ postfix_fqdn }}
 relayhost = {{ postfix_relayhost }}
-{% endif %}
-mynetworks = {% for network in postfix_mynetworks %}{{ network }} {% endfor %} 
+mynetworks = {{ postfix_mynetworks }}
 mailbox_size_limit = 0
 recipient_delimiter = +
 inet_interfaces = all
@@ -33,11 +29,11 @@ inet_protocols = all
 compatibility_level = 2
 
 # Domains für welche mails entgegen genommen werden
-{% if 'mailman' in role_names %}
-virtual_alias_domains = lists.{{ base_url }}, shack.space, lists.shack.space
+{% if postfix_virtual_alias_domains is defined %}
+virtual_alias_domains = {{ postfix_virtual_alias_domains}}
 {% endif %}
-{% if postfix_virtual_alias is defined or mailuser is defined %}
-virtual_alias_maps = hash:/etc/postfix/virtual_alias{% if 'mailman' in role_names %}, hash:/var/lib/mailman/data/virtual-mailman{% endif %} 
+{% if postfix_virtual_alias_maps is defined %}
+virtual_alias_maps = {{ postfix_virtual_alias_maps }}
 {% endif %}
 
 # Setup basic SMTP attrs
@@ -51,12 +47,12 @@ strict_rfc821_envelopes = yes
 disable_vrfy_command = yes
 smtpd_recipient_limit = 250
 
-{% if postfix_ssl is defined and postfix_ssl == true %}
+{% if postfix_ssl %}
 # TLS parameters
-smtpd_tls_cert_file=/etc/ssl/letsencrypt/certs/{{hostname}}.{{base_url}}/cert.pem
-smtpd_tls_key_file=/etc/ssl/letsencrypt/certs/{{hostname}}.{{base_url}}/privkey.pem
-smtp_tls_CAfile = /etc/ssl/letsencrypt/certs/{{hostname}}.{{base_url}}/chain.pem
-smtp_tls_CApath = /etc/ssl/letsencrypt/certs/{{hostname}}.{{base_url}}/fullchain.pem
+smtpd_tls_cert_file={{ postfix_cert_path }}/cert.pem
+smtpd_tls_key_file={{ postfix_cert_path }}/privkey.pem
+smtp_tls_CAfile = {{ postfix_cert_path }}/chain.pem
+smtp_tls_CApath = {{ postfix_cert_path }}/fullchain.pem
 # Wenn no, dann keine entgegennahme von Mails
 smtpd_use_tls=yes
 smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
@@ -139,7 +135,7 @@ smtpd_data_restrictions =
     reject_unauth_pipelining,
     permit
 
-{% if postfix_srs is defined and postfix_srs == true %}
+{% if postfix_srs %}
 # SRS Part
 sender_canonical_maps = tcp:localhost:10001
 sender_canonical_classes = envelope_sender
@@ -147,14 +143,13 @@ recipient_canonical_maps = tcp:localhost:10002
 recipient_canonical_classes= envelope_recipient,header_recipient
 {% endif %}
 
-{% if 'dovecot' in role_names and dovecot_lmtp is defined and dovecot_lmtp == true %}
+{% if dovecot_lmtp %}
 #add from http://wiki2.dovecot.org/HowTo/PostfixDovecotLMTP
 virtual_transport = lmtp:unix:private/dovecot-lmtp
-
-virtual_mailbox_domains = {{ base_url }}
+virtual_mailbox_domains = {{ postfix_virtual_mailbox_domains }}
 {% endif %}
 
-{% if 'rspamd' in role_names %}
+{% if postfix_rmilter %}
 # Rmilter setup
 smtpd_milters = inet:localhost:11332
 milter_protocol = 6

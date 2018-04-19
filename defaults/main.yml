@@ -10,6 +10,15 @@ postfix_submission: false
 ufw_submission_public: "{{ postfix_submission }}"
 postfix_smtps: true
 ufw_smtps: "{{ postfix_smtps }}"
+postfix_smtpd_banner: "$myhostname ESMTP $mail_name"
+postfix_delay_warning_time: "4h"
+postfix_alias_maps: "hash:/etc/aliases"
+postfix_relayhost : ""
+postfix_ssl: true
+postfix_rmilter: false
+postfix_cert_path: "/etc/ssl/letsencrypt/certs/{{ postfix_fqdn }}"
+postfix_virtual_mailbox_domains: "{{ ansible_domain }}"
+postfix_mynetworks: "127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128"
 
 # copy from: https://github.com/Oefenweb/ansible-postfix/blob/master/vars/main.yml
 postfix_debconf_selections:
@@ -18,7 +27,4 @@ postfix_debconf_selections:
     value: No configuration
     vtype: select
 
-postfix_mynetworks:
-  - "127.0.0.0/8"
-  - "[::ffff:127.0.0.0]/104"
-  - "[::1]/128"
+dovecot_lmtp: false
