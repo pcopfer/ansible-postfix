@@ -1,12 +1,7 @@
-Role Name
+pcopfer.postfix
 =========
 
 A role to manage Postfix.
-
-Requirements
-------------
-
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
 
 Role Variables
 --------------
@@ -29,17 +24,12 @@ Role Variables
 - ``postfix_cert_path: "/etc/ssl/letsencrypt/certs/{{ postfix_fqdn }}"`` Path to the certs
 - ``postfix_rmilter: false`` Add Rmilter config for rspamd
 - ``postfix_virtual_mailbox_domains: "{{ ansible_domain }}"`` Virtual Domains
-- ``postfix_mynetworks: "127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128"`` my_networks for send Mail without authentication
+- ``postfix_mynetworks: "127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128"`` my_networks IP Ranges for send Mail without authentication
 - ``postfix_debconf_selections: ...`` For Debian etc. only
 - ``postfix_srs: false`` Disable Postfix Sender rewrite scheme (postsrsd)
 - ``postsrsd_domains: "{{ postfix_domain }}"`` 
 - ``postsrsd_exclude_domains: ".{{ postfix_domain }}"``
 - ``dovecot_lmtp: false`` Disable dovecot_lmtp Dovecot Local Mail transport
-
-Dependencies
-------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
 
 Example Playbook
 ----------------
@@ -48,7 +38,7 @@ Including an example of how to use your role (for instance, with variables passe
 
     - hosts: servers
       roles:
-         - { role: username.rolename, x: 42 }
+         - role: pcopfer.postfix
 
 License
 -------
