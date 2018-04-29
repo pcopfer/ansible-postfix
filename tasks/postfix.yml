@@ -11,7 +11,7 @@
     - rspamd
 
 - name: Copy master.cf config file in Place
-  copy:
+  template:
     src: master.cf
     dest: /etc/postfix/master.cf
   notify: Reload Postfix
