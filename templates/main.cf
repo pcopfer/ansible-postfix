@@ -15,7 +15,7 @@ readme_directory = no
 # information on enabling SSL in the smtp client.
 
 myhostname = {{ postfix_myhostname }}
-alias_maps = "{{ postfix_alias_maps }} 
+alias_maps = {{ postfix_alias_maps }} 
 alias_database = hash:/etc/aliases
 myorigin = {{ postfix_fqdn }}
 mydestination = localhost.{{ postfix_domain }}, , localhost, {{ postfix_fqdn }}
