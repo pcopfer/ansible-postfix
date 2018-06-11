@@ -21,6 +21,7 @@ Role Variables
 - ``postfix_alias_maps: "hash:/etc/aliases"`` Alias Map for postfix_domain
 - ``postfix_relayhost : ""`` Add Postfix relayhost, different Server which sends the Mails to the internet
 - ``postfix_ssl: true`` Postfix use TLS
+- ``postfix_ssl_high: true`` Enable strong cipher
 - ``postfix_cert_path: "/etc/ssl/letsencrypt/certs/{{ postfix_fqdn }}"`` Path to the certs
 - ``postfix_rmilter: false`` Add Rmilter config for rspamd
 - ``postfix_virtual_mailbox_domains: "{{ ansible_domain }}"`` Virtual Domains

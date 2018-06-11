@@ -15,6 +15,7 @@ postfix_delay_warning_time: "4h"
 postfix_alias_maps: "hash:/etc/aliases"
 postfix_relayhost : ""
 postfix_ssl: true
+postfix_ssl_high: true
 postfix_rmilter: false
 postfix_cert_path: "/etc/ssl/letsencrypt/certs/{{ postfix_fqdn }}"
 postfix_virtual_mailbox_domains: "{{ ansible_domain }}"
