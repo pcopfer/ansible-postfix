@@ -1,9 +1,10 @@
 ---
 - name: Install base packages
   apt:
-    pkg: "{{ item }}"
+    name: "{{ packages }}"
     state: present
-  with_items:
+  vars:
+    packages:      
     - postfix
     - postfix-pcre
     - mailutils
@@ -15,9 +16,11 @@
 
 - name: Install or remove postfix_srs
   apt:
-    pkg: "{{ item }}"
+  apt:
+    name: "{{ packages }}"
     state: "{% if postfix_srs %}present{% else %}absent{% endif %}"
-  with_items:
+  vars:
+    packages:      
     - postsrsd
   tags:
     - apt
