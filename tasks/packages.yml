@@ -16,7 +16,6 @@
 
 - name: Install or remove postfix_srs
   apt:
-  apt:
     name: "{{ packages }}"
     state: "{% if postfix_srs %}present{% else %}absent{% endif %}"
   vars:
