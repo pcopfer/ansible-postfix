@@ -4,7 +4,9 @@
 # Alias for every Mailuser on the System
 {% for mailuser_item in mailuser %}
 {% for users_item in mailuser_item.users %}
+{% if users_item.no_mailbox is not defined or users_item.no_mailbox == false%}
 {{ users_item.username }}@{{ mailuser_item.domain }}	{{ users_item.username }}@{{ mailuser_item.domain }}
+{% endif %}
 {% endfor %}
 {% endfor %}
 {% endif %}
