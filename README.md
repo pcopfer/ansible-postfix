@@ -31,6 +31,7 @@ Role Variables
 - ``postsrsd_domains: "{{ postfix_domain }}"`` 
 - ``postsrsd_exclude_domains: ".{{ postfix_domain }}"``
 - ``dovecot_lmtp: false`` Disable dovecot_lmtp Dovecot Local Mail transport
+- ``postfix_remove_client_headers: true`` Remove some headers from Mails when incomming via submision
 
 Example Playbook
 ----------------

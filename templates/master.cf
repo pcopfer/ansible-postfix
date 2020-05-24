@@ -24,7 +24,9 @@ submission inet  n       -       y       -       -       smtpd
     -o smtpd_sasl_type=dovecot
     -o smtpd_sasl_path=private/auth
     -o smtpd_client_restrictions=permit_sasl_authenticated,reject
-#    -o cleanup_service_name=auth-cleanup
+{%  if postfix_remove_client_headers %}
+    -o cleanup_service_name=client-header-cleanup
+{%  endif %}
 {% endif %}
 #628       inet  n       -       -       -       -       qmqpd
 {% if postfix_smtps %}
@@ -55,10 +57,12 @@ local     unix  -       n       n       -       -       local
 virtual   unix  -       n       n       -       -       virtual
 lmtp       unix  -       -       y       -       -       lmtp
 anvil      unix  -       -       y       -       1       anvil
-#auth-cleanup unix n      -       -       -       0       cleanup
-#    -o syslog_name=postfix/auth-cleanup
-#    -o header_checks=pcre:/etc/postfix/maps/auth_header_checks.pcre
-#
+{% if postfix_remove_client_headers %}
+client-header-cleanup unix n      -       y       -       0       cleanup
+    -o syslog_name=postfix/client-header-cleanup
+    -o header_checks=pcre:/etc/postfix/maps/client-header-checks.pcre
+{% endif %}
+
 # ====================================================================
 # Interfaces to non-Postfix software. Be sure to examine the manual
 # pages of the non-Postfix software to find out what options it wants.

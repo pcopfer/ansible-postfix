@@ -50,6 +50,24 @@
     - postfix
     - postsrsd
 
+- name: Create maps folder
+  path: /etc/postfix/maps
+  state: directory
+  when: postfix_remove_client_headers == true
+  tags:
+    - mail
+    - postfix
+
+- name: Copy pcre file for client headers in place
+  file:
+    src: client-header-checks.pcre
+    dest: /etc/postfix/maps/client-header-checks.pcre
+  when: postfix_remove_client_headers == true
+  notify: Reload Postfix
+  tags:
+    - mail
+    - postfix
+
 - name: create Whitelist file
   template:
       src: whitelist
