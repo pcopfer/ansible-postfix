@@ -51,8 +51,9 @@
     - postsrsd
 
 - name: Create maps folder
-  path: /etc/postfix/maps
-  state: directory
+  file:
+    path: /etc/postfix/maps
+    state: directory
   when: postfix_remove_client_headers == true
   tags:
     - mail
