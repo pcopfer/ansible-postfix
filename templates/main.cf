@@ -49,10 +49,8 @@ smtpd_recipient_limit = 250
 
 {% if postfix_ssl %}
 # TLS parameters
-smtpd_tls_cert_file={{ postfix_cert_path }}/cert.pem
+smtpd_tls_cert_file={{ postfix_cert_path }}/fullchain.pem
 smtpd_tls_key_file={{ postfix_cert_path }}/privkey.pem
-smtp_tls_CAfile = {{ postfix_cert_path }}/chain.pem
-smtp_tls_CApath = {{ postfix_cert_path }}/fullchain.pem
 # Wenn no, dann keine entgegennahme von Mails
 smtpd_use_tls=yes
 smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
